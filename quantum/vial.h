@@ -220,3 +220,6 @@ enum {
 #undef VIAL_ALT_REPEAT_KEY_ENTRIES
 #define VIAL_ALT_REPEAT_KEY_ENTRIES 0
 #endif
+
+bool has_user_tapping_term(uint16_t, keyrecord_t*);
+uint16_t get_tapping_term_user(uint16_t, keyrecord_t*);

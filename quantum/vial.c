@@ -529,6 +529,10 @@ static void reload_tap_dance(void) {
 
 #ifdef TAPPING_TERM_PER_KEY
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    if (has_user_tapping_term(keycode, record)) {
+        return get_tapping_term_user(keycode, record);
+    }
+
 #ifdef VIAL_TAP_DANCE_ENABLE
     if (keycode >= QK_TAP_DANCE && keycode <= QK_TAP_DANCE_MAX) {
         vial_tap_dance_entry_t td;
@@ -553,6 +557,14 @@ tap_dance_action_t* tap_dance_get(uint16_t tap_dance_idx) {
     return &tap_dance_actions[tap_dance_idx];
 }
 #endif
+
+__attribute__((weak)) bool has_user_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    return false;
+}
+
+__attribute__((weak)) uint16_t get_tapping_term_user(uint16_t keycode, keyrecord_t *record) {
+    return TAPPING_TERM;
+}
 
 #ifdef VIAL_COMBO_ENABLE
 combo_t key_combos[VIAL_COMBO_ENTRIES] = { };
