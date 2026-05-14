@@ -221,5 +221,31 @@ enum {
 #define VIAL_ALT_REPEAT_KEY_ENTRIES 0
 #endif
 
+#ifdef VIAL_TAP_DANCE_ENABLE
 bool has_user_tapping_term(uint16_t, keyrecord_t*);
 uint16_t get_tapping_term_user(uint16_t, keyrecord_t*);
+
+    #ifdef USER_TAP_DANCE_ENABLE
+        // Get the number of tap dances defined in the user's keymap, stored in firmware rather than any other persistent storage
+        uint16_t user_tap_dance_count_raw(void);
+        // Get the number of tap dances defined in the user's keymap, potentially stored dynamically
+        uint16_t user_tap_dance_count(void);
+
+        // Get the user tap dance definitions, stored in firmware rather than any other persistent storage
+        tap_dance_action_t* tap_dance_get_raw_user(uint16_t tap_dance_idx);
+        // Get the user tap dance definitions, potentially stored dynamically
+        tap_dance_action_t* tap_dance_get_user(uint16_t tap_dance_idx);
+
+        #define USER_TD(n) (QK_TAP_DANCE + VIAL_TAP_DANCE_ENTRIES + ((n)))
+
+        static inline bool is_user_td(uint16_t kc) {
+            return kc >= USER_TD(0) &&
+                kc < USER_TD(0) + user_tap_dance_count();
+        }
+
+        // Requires: is_user_td(kc) == true
+        static inline uint16_t user_td_idx(uint16_t kc) {
+            return kc - USER_TD(0);
+        }
+    #endif
+#endif

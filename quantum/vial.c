@@ -535,9 +535,12 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 
 #ifdef VIAL_TAP_DANCE_ENABLE
     if (keycode >= QK_TAP_DANCE && keycode <= QK_TAP_DANCE_MAX) {
-        vial_tap_dance_entry_t td;
-        if (dynamic_keymap_get_tap_dance(keycode & 0xFF, &td) == 0)
-            return td.custom_tapping_term;
+        uint16_t td_index = keycode - QK_TAP_DANCE;
+        if (td_index < VIAL_TAP_DANCE_ENTRIES) {
+            vial_tap_dance_entry_t td;
+            if (dynamic_keymap_get_tap_dance(td_index, &td) == 0)
+                return td.custom_tapping_term;
+        }
     }
 #endif
 #ifdef QMK_SETTINGS
@@ -548,15 +551,43 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 }
 
 uint16_t tap_dance_count(void) {
+#ifdef USER_TAP_DANCE_ENABLE
+    return VIAL_TAP_DANCE_ENTRIES + user_tap_dance_count();
+#else
     return VIAL_TAP_DANCE_ENTRIES;
+#endif
 }
 
 tap_dance_action_t* tap_dance_get(uint16_t tap_dance_idx) {
     if (tap_dance_idx >= VIAL_TAP_DANCE_ENTRIES)
+    #ifdef USER_TAP_DANCE_ENABLE
+        return tap_dance_get_user(tap_dance_idx - VIAL_TAP_DANCE_ENTRIES);
+    #endif
         return NULL;
     return &tap_dance_actions[tap_dance_idx];
 }
-#endif
+
+#ifdef USER_TAP_DANCE_ENABLE
+uint16_t user_tap_dance_count_raw(void) {
+    return ARRAY_SIZE(user_tap_dance_actions);
+}
+
+__attribute__((weak)) uint16_t user_tap_dance_count(void) {
+    return user_tap_dance_count_raw();
+}
+
+STATIC_ASSERT(VIAL_TAP_DANCE_ENTRIES + ARRAY_SIZE(user_tap_dance_actions) <= (QK_TAP_DANCE_MAX - QK_TAP_DANCE), "Number of tap dance actions exceeds maximum.");
+
+tap_dance_action_t* tap_dance_get_raw_user(uint16_t tap_dance_idx) {
+    if (tap_dance_idx >= user_tap_dance_count_raw()) {
+        return NULL;
+    }
+    return &user_tap_dance_actions[tap_dance_idx];
+}
+
+__attribute__((weak)) tap_dance_action_t* tap_dance_get_user(uint16_t tap_dance_idx) {
+    return tap_dance_get_raw_user(tap_dance_idx);
+}
 
 __attribute__((weak)) bool has_user_tapping_term(uint16_t keycode, keyrecord_t *record) {
     return false;
@@ -565,6 +596,8 @@ __attribute__((weak)) bool has_user_tapping_term(uint16_t keycode, keyrecord_t *
 __attribute__((weak)) uint16_t get_tapping_term_user(uint16_t keycode, keyrecord_t *record) {
     return TAPPING_TERM;
 }
+#endif
+#endif
 
 #ifdef VIAL_COMBO_ENABLE
 combo_t key_combos[VIAL_COMBO_ENTRIES] = { };
