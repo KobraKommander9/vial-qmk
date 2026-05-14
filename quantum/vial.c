@@ -568,6 +568,8 @@ tap_dance_action_t* tap_dance_get(uint16_t tap_dance_idx) {
 }
 
 #ifdef USER_TAP_DANCE_ENABLE
+__attribute__((weak)) tap_dance_action_t user_tap_dance_actions[] = {};
+
 uint16_t user_tap_dance_count_raw(void) {
     return ARRAY_SIZE(user_tap_dance_actions);
 }

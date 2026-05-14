@@ -222,6 +222,8 @@ enum {
 #endif
 
 #ifdef VIAL_TAP_DANCE_ENABLE
+#include "process_tap_dance.h"
+
 bool has_user_tapping_term(uint16_t, keyrecord_t*);
 uint16_t get_tapping_term_user(uint16_t, keyrecord_t*);
 
