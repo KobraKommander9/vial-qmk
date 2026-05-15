@@ -238,7 +238,7 @@ uint16_t get_tapping_term_user(uint16_t, keyrecord_t*);
         // Get the user tap dance definitions, potentially stored dynamically
         tap_dance_action_t* tap_dance_get_user(uint16_t tap_dance_idx);
 
-        #define USER_TD(n) (QK_TAP_DANCE + VIAL_TAP_DANCE_ENTRIES + ((n)))
+        #define USER_TD(n) TD(QK_TAP_DANCE + VIAL_TAP_DANCE_ENTRIES + ((n)))
 
         static inline bool is_user_td(uint16_t kc) {
             return kc >= USER_TD(0) &&
