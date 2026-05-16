@@ -562,33 +562,21 @@ tap_dance_action_t* tap_dance_get(uint16_t tap_dance_idx) {
     if (tap_dance_idx >= VIAL_TAP_DANCE_ENTRIES)
     #ifdef USER_TAP_DANCE_ENABLE
         return tap_dance_get_user(tap_dance_idx - VIAL_TAP_DANCE_ENTRIES);
-    #endif
+    #else
         return NULL;
+    #endif
     return &tap_dance_actions[tap_dance_idx];
 }
 
 #ifdef USER_TAP_DANCE_ENABLE
-__attribute__((weak)) tap_dance_action_t user_tap_dance_actions[] = {};
-
-uint16_t user_tap_dance_count_raw(void) {
-    return ARRAY_SIZE(user_tap_dance_actions);
-}
-
 __attribute__((weak)) uint16_t user_tap_dance_count(void) {
-    return user_tap_dance_count_raw();
+    return 0;
 }
 
-STATIC_ASSERT(VIAL_TAP_DANCE_ENTRIES + ARRAY_SIZE(user_tap_dance_actions) <= (QK_TAP_DANCE_MAX - QK_TAP_DANCE), "Number of tap dance actions exceeds maximum.");
-
-tap_dance_action_t* tap_dance_get_raw_user(uint16_t tap_dance_idx) {
-    if (tap_dance_idx >= user_tap_dance_count_raw()) {
+tap_dance_action_t* tap_dance_get_user(uint16_t tap_dance_idx) {
+    if (tap_dance_idx >= user_tap_dance_count())
         return NULL;
-    }
     return &user_tap_dance_actions[tap_dance_idx];
-}
-
-__attribute__((weak)) tap_dance_action_t* tap_dance_get_user(uint16_t tap_dance_idx) {
-    return tap_dance_get_raw_user(tap_dance_idx);
 }
 
 __attribute__((weak)) bool has_user_tapping_term(uint16_t keycode, keyrecord_t *record) {
